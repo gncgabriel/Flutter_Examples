@@ -1,3 +1,4 @@
 abstract class Routes {
-  static String main_home_page = "main/home_page";
+  static String mainHomePage = "main";
+  static String chatExamplePage = "chat_example";
 }
