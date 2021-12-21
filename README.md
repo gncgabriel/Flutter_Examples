@@ -5,7 +5,7 @@ A new Flutter project.
 ## Preview
 
 The web app could be access in: 
-https://flutter-examples-7733b.web.app/#main/home_page
+https://flutter-examples-7733b.web.app
 
 ## Getting Started
 
