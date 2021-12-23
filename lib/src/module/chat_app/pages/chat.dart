@@ -1,4 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_examples/src/module/chat_app/cubits/chat_cubit.dart';
+import 'package:flutter_examples/src/module/chat_app/cubits/chat_state.dart';
+import 'package:flutter_examples/src/module/chat_app/mocks/chat.json.dart';
+import 'package:flutter_examples/src/module/chat_app/pages/states/clean_chat.dart';
+import 'package:flutter_examples/src/module/chat_app/pages/states/selected_chat.dart';
 import 'package:flutter_examples/src/shared/constants/routes.dart';
 import 'package:flutter_examples/src/shared/utils/screen_size.dart';
 
@@ -12,9 +18,16 @@ class ChatApp extends StatefulWidget {
 class _ChatAppState extends State<ChatApp> {
   @override
   Widget build(BuildContext context) {
-    return (ScreenSizeUtils.isDesktopScreen(context))
-        ? const _Home()
-        : const _MobileHome();
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<ChatCubit>(
+          create: (_) => ChatCubit(),
+        )
+      ],
+      child: (ScreenSizeUtils.isDesktopScreen(context))
+          ? const _Home()
+          : const _MobileHome(),
+    );
   }
 }
 
@@ -63,22 +76,40 @@ class _BodyChat extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: ScreenSizeUtils.isDesktopScreen(context)
+          ? const EdgeInsets.all(32)
+          : null,
       color: Colors.grey[100],
-      child: Column(
-        children: [
-          Container(
-            height: 64,
-          ),
-          Expanded(
-            child: Container(
-              color: Colors.white,
+      child: Container(
+        color: Colors.white,
+        child: Column(
+          children: [
+            Expanded(
+              child: BlocBuilder<ChatCubit, ChatState>(
+                builder: (_, state) {
+                  if (state is ChatStateLoading) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+                  if (state is ChatStateError) {
+                    return const Center(
+                      child: Text("Ocorreu um erro"),
+                    );
+                  }
+                  if (state is ChatStateSelected) {
+                    return SelectedChat(
+                      id: state.chatId,
+                      personName: state.personName,
+                      message: state.message,
+                    );
+                  }
+                  return CleanChat();
+                },
+              ),
             ),
-          ),
-          Container(
-            height: 64,
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -89,6 +120,7 @@ class _DrawerContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final chatCubit = BlocProvider.of<ChatCubit>(context);
     return Column(
       children: [
         const UserAccountsDrawerHeader(
@@ -97,15 +129,17 @@ class _DrawerContent extends StatelessWidget {
           accountEmail: Text("test@email.com"),
           currentAccountPicture: CircleAvatar(
             backgroundColor: Colors.white,
+            backgroundImage: AssetImage(
+              "images/avatar3.jpg",
+            ),
           ),
         ),
         ListTile(
           tileColor: Colors.grey[100],
           leading: const Icon(Icons.keyboard_arrow_left),
-          title: const Text("Voltar"),
+          title: const Text("Back to Home"),
           onTap: () {
-            Navigator.of(context)
-                .pushReplacementNamed(Routes.mainHomePage);
+            Navigator.of(context).pushReplacementNamed(Routes.mainHomePage);
           },
         ),
         const SizedBox(
@@ -113,13 +147,30 @@ class _DrawerContent extends StatelessWidget {
         ),
         Expanded(
           child: ListView.builder(
-            itemCount: 10,
-            itemBuilder: (context, int qtd) {
+            itemCount: chatData.length,
+            itemBuilder: (context, int index) {
               return ListTile(
+                onTap: () {
+                  chatCubit.selectChat(
+                    chatData[index]['id'],
+                    chatData[index]['personName'],
+                    chatData[index]['message'],
+                  );
+                  if (!ScreenSizeUtils.isDesktopScreen(context)) {
+                    Navigator.of(context).pop();
+                  }
+                },
                 leading: const CircleAvatar(
-                  child: Text("C"),
+                  backgroundImage: AssetImage("images/avatar4.png"),
+                  // child: Text(
+                  //   chatData[index]['personName']
+                  //       .toString()
+                  //       .substring(0, 2)
+                  //       .toUpperCase(),
+                  // ),
                 ),
-                title: Text("Chat $qtd"),
+                title: Text(chatData[index]['personName']),
+                subtitle: Text(chatData[index]['message']),
               );
             },
           ),

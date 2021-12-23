@@ -1,6 +1,6 @@
 {
-    "name": "flutter_examples",
-    "short_name": "flutter_examples",
+    "name": "flutter_example",
+    "short_name": "flutter_example",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
