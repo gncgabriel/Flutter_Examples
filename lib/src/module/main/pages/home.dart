@@ -50,6 +50,13 @@ class _Body extends StatelessWidget {
                       Navigator.of(context).pushNamed(Routes.chatExamplePage);
                     },
                   ),
+                  _CardButton(
+                    iconData: Icons.animation,
+                    text: "Heart Animations",
+                    onPressed: () {
+                      Navigator.of(context).pushNamed(Routes.heartAnimations);
+                    },
+                  ),
                   ..._mountCardList(),
                 ],
                 mainAxisSpacing: 16,

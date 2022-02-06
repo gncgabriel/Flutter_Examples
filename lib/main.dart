@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_examples/src/module/animations/heart_animations/anims/pulsing.dart';
+import 'package:flutter_examples/src/module/animations/heart_animations/heart_animations.dart';
 import 'package:flutter_examples/src/module/chat_app/pages/chat.dart';
 import 'package:flutter_examples/src/module/main/pages/home.dart';
 import 'package:flutter_examples/src/shared/constants/routes.dart';
@@ -11,6 +13,8 @@ Map<String, WidgetBuilder> routes() {
   return {
     Routes.mainHomePage: (_) => const MainHomePage(),
     Routes.chatExamplePage: (_) => const ChatApp(),
+    Routes.heartAnimations: (_) => const HeartAnimations(),
+    Routes.heartPulsing: (_) => const HeartPulsing(),
   };
 }
 
